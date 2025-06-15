@@ -106,7 +106,15 @@ function renderMetricCard(metric: MetricData): string {
       <div class="metric-change ${trendClass}">
         ${trendIcon} ${Math.abs(metric.change)}% from last month
       </div>
-      <div class="metric-sparkline"></div>
+      <div class="metric-sparkline">
+        <svg viewBox="0 0 200 40" style="width: 100%; height: 100%;">
+          <path d="M 0 30 L 20 28 L 40 25 L 60 26 L 80 22 L 100 20 L 120 18 L 140 15 L 160 12 L 180 10 L 200 8" 
+                stroke="${metric.color === 'blue' ? '#3B82F6' : metric.color === 'green' ? '#10B981' : metric.color === 'purple' ? '#8B5CF6' : '#F59E0B'}" 
+                stroke-width="2" 
+                fill="none" 
+                opacity="0.5" />
+        </svg>
+      </div>
     </div>
   `;
 }
@@ -209,7 +217,74 @@ function renderAnalyticsDashboard(): string {
             </div>
           </div>
           <div class="chart-placeholder">
-            <span>Interactive Revenue Chart with Multiple Metrics</span>
+            <svg viewBox="0 0 800 300" style="width: 100%; height: 100%;">
+              <!-- Grid lines -->
+              <g class="grid-lines" stroke="#374151" stroke-width="0.5" opacity="0.3">
+                <line x1="50" y1="250" x2="750" y2="250" />
+                <line x1="50" y1="200" x2="750" y2="200" />
+                <line x1="50" y1="150" x2="750" y2="150" />
+                <line x1="50" y1="100" x2="750" y2="100" />
+                <line x1="50" y1="50" x2="750" y2="50" />
+              </g>
+              
+              <!-- Y-axis labels -->
+              <g class="y-labels" fill="#9CA3AF" font-size="12">
+                <text x="40" y="255" text-anchor="end">$0</text>
+                <text x="40" y="205" text-anchor="end">$10k</text>
+                <text x="40" y="155" text-anchor="end">$20k</text>
+                <text x="40" y="105" text-anchor="end">$30k</text>
+                <text x="40" y="55" text-anchor="end">$40k</text>
+              </g>
+              
+              <!-- Area chart gradient -->
+              <defs>
+                <linearGradient id="revenueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Revenue area -->
+              <path d="M 50 220 L 100 210 L 150 180 L 200 170 L 250 160 L 300 140 L 350 130 L 400 120 L 450 110 L 500 100 L 550 90 L 600 85 L 650 80 L 700 75 L 750 70 L 750 250 L 50 250 Z" 
+                    fill="url(#revenueGradient)" />
+              
+              <!-- Revenue line -->
+              <path d="M 50 220 L 100 210 L 150 180 L 200 170 L 250 160 L 300 140 L 350 130 L 400 120 L 450 110 L 500 100 L 550 90 L 600 85 L 650 80 L 700 75 L 750 70" 
+                    stroke="#3B82F6" stroke-width="3" fill="none" />
+              
+              <!-- Data points -->
+              <g fill="#3B82F6">
+                <circle cx="50" cy="220" r="4" />
+                <circle cx="150" cy="180" r="4" />
+                <circle cx="250" cy="160" r="4" />
+                <circle cx="350" cy="130" r="4" />
+                <circle cx="450" cy="110" r="4" />
+                <circle cx="550" cy="90" r="4" />
+                <circle cx="650" cy="80" r="4" />
+                <circle cx="750" cy="70" r="4" />
+              </g>
+              
+              <!-- X-axis labels -->
+              <g class="x-labels" fill="#9CA3AF" font-size="12">
+                <text x="50" y="270" text-anchor="middle">Dec 1</text>
+                <text x="200" y="270" text-anchor="middle">Dec 5</text>
+                <text x="350" y="270" text-anchor="middle">Dec 10</text>
+                <text x="500" y="270" text-anchor="middle">Dec 15</text>
+                <text x="650" y="270" text-anchor="middle">Dec 20</text>
+              </g>
+              
+              <!-- Comparison line (last period) -->
+              <path d="M 50 240 L 100 235 L 150 230 L 200 225 L 250 220 L 300 215 L 350 210 L 400 205 L 450 200 L 500 195 L 550 190 L 600 185 L 650 180 L 700 175 L 750 170" 
+                    stroke="#9CA3AF" stroke-width="2" fill="none" stroke-dasharray="5,5" opacity="0.5" />
+                    
+              <!-- Legend -->
+              <g font-size="12">
+                <rect x="580" y="20" width="15" height="3" fill="#3B82F6" />
+                <text x="600" y="24" fill="#9CA3AF">Current Period</text>
+                <rect x="580" y="35" width="15" height="2" fill="#9CA3AF" opacity="0.5" />
+                <text x="600" y="39" fill="#9CA3AF">Previous Period</text>
+              </g>
+            </svg>
           </div>
         </div>
         
@@ -219,7 +294,56 @@ function renderAnalyticsDashboard(): string {
             <button class="btn-icon">⋮</button>
           </div>
           <div class="chart-placeholder" style="height: 300px;">
-            <span>Interactive Donut Chart</span>
+            <svg viewBox="0 0 400 300" style="width: 100%; height: 100%;">
+              <!-- Donut chart segments -->
+              <g transform="translate(150, 130)">
+                <!-- Home Decor - 35% -->
+                <path d="M 0,-80 A 80,80 0 0,1 61.44,51.42 L 30.72,25.71 A 40,40 0 0,0 0,-40 Z"
+                      fill="#8B5CF6" opacity="0.9" />
+                
+                <!-- Jewelry - 28% -->
+                <path d="M 61.44,51.42 A 80,80 0 0,1 -31.17,73.72 L -15.59,36.86 A 40,40 0 0,0 30.72,25.71 Z"
+                      fill="#3B82F6" opacity="0.9" />
+                
+                <!-- Fashion - 22% -->
+                <path d="M -31.17,73.72 A 80,80 0 0,1 -78.48,-15.64 L -39.24,-7.82 A 40,40 0 0,0 -15.59,36.86 Z"
+                      fill="#10B981" opacity="0.9" />
+                
+                <!-- Wellness - 15% -->
+                <path d="M -78.48,-15.64 A 80,80 0 0,1 0,-80 L 0,-40 A 40,40 0 0,0 -39.24,-7.82 Z"
+                      fill="#F59E0B" opacity="0.9" />
+                
+                <!-- Center circle for donut -->
+                <circle cx="0" cy="0" r="40" fill="#1E2139" />
+                
+                <!-- Center text -->
+                <text x="0" y="-5" text-anchor="middle" fill="#F9FAFB" font-size="24" font-weight="700">$47.4k</text>
+                <text x="0" y="15" text-anchor="middle" fill="#9CA3AF" font-size="12">Total Sales</text>
+              </g>
+              
+              <!-- Legend -->
+              <g transform="translate(280, 80)" font-size="12">
+                <!-- Home Decor -->
+                <rect x="0" y="0" width="12" height="12" fill="#8B5CF6" rx="2" />
+                <text x="18" y="10" fill="#F9FAFB">Home Decor</text>
+                <text x="18" y="24" fill="#9CA3AF">35% • $16.6k</text>
+                
+                <!-- Jewelry -->
+                <rect x="0" y="40" width="12" height="12" fill="#3B82F6" rx="2" />
+                <text x="18" y="50" fill="#F9FAFB">Jewelry</text>
+                <text x="18" y="64" fill="#9CA3AF">28% • $13.3k</text>
+                
+                <!-- Fashion -->
+                <rect x="0" y="80" width="12" height="12" fill="#10B981" rx="2" />
+                <text x="18" y="90" fill="#F9FAFB">Fashion</text>
+                <text x="18" y="104" fill="#9CA3AF">22% • $10.4k</text>
+                
+                <!-- Wellness -->
+                <rect x="0" y="120" width="12" height="12" fill="#F59E0B" rx="2" />
+                <text x="18" y="130" fill="#F9FAFB">Wellness</text>
+                <text x="18" y="144" fill="#9CA3AF">15% • $7.1k</text>
+              </g>
+            </svg>
           </div>
         </div>
       </div>

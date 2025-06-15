@@ -29,7 +29,8 @@ async function init() {
       <!-- Sidebar -->
       <aside class="sidebar">
         <div class="logo">
-          <h2>SocksCRM</h2>
+          <img src="/Screenshot 2025-06-15 at 15.22.24 1.png" alt="WearsSmart Logo" class="logo-img">
+          <h2>WearsSmart Store Analytics</h2>
           <span class="subtitle">Etsy Shop Manager</span>
         </div>
         

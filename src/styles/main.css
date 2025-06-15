@@ -56,6 +56,17 @@ body {
 .logo {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.logo-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .logo h2 {

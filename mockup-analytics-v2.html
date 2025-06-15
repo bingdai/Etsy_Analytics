@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etsy Analytics Pro - Business Intelligence Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #0A0E27;
+            --bg-secondary: #151934;
+            --bg-card: #1E2139;
+            --bg-hover: #252846;
+            --accent-blue: #3B82F6;
+            --accent-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --accent-orange: #F59E0B;
+            --accent-red: #EF4444;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            --border-color: #374151;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-primary);
+            padding: 0.25rem;
+            border-radius: 12px;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Main Layout */
+        .main-container {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Metric Cards Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .metric-card.green::before { background: var(--gradient-3); }
+        .metric-card.purple::before { background: var(--gradient-2); }
+        .metric-card.orange::before { background: var(--gradient-4); }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .metric-icon.blue { background: rgba(59, 130, 246, 0.1); }
+        .metric-icon.green { background: rgba(16, 185, 129, 0.1); }
+        .metric-icon.purple { background: rgba(139, 92, 246, 0.1); }
+        .metric-icon.orange { background: rgba(245, 158, 11, 0.1); }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .change-positive { color: var(--accent-green); }
+        .change-negative { color: var(--accent-red); }
+
+        .metric-sparkline {
+            margin-top: 1rem;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .chart-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-option {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-option.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Segmentation Cards */
+        .segment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .segment-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .segment-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+        }
+
+        .segment-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .segment-icon.vip { background: var(--gradient-1); }
+        .segment-icon.loyal { background: var(--gradient-3); }
+        .segment-icon.new { background: var(--gradient-4); }
+        .segment-icon.risk { background: var(--gradient-2); }
+
+        .segment-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .segment-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .segment-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .segment-stat {
+            background: var(--bg-secondary);
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .segment-stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .segment-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Product Performance Table */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .table-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            width: 300px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-category {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .performance-bar {
+            width: 100px;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 4px;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tag.trending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-orange);
+        }
+
+        .tag.bestseller {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        /* Action Button */
+        .floating-action {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="brand">
+            <div class="brand-logo">E</div>
+            <div class="brand-name">Etsy Analytics Pro</div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active">Overview</button>
+            <button class="nav-tab">Sales</button>
+            <button class="nav-tab">Customers</button>
+            <button class="nav-tab">Products</button>
+            <button class="nav-tab">Marketing</button>
+        </div>
+        
+        <div class="nav-actions">
+            <div class="date-selector">
+                📅 Last 30 Days ▼
+            </div>
+            <button class="btn-icon">🔔</button>
+            <button class="btn-icon">⚙️</button>
+            <button class="btn-icon">👤</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">TOTAL REVENUE</div>
+                    <div class="metric-icon blue">💰</div>
+                </div>
+                <div class="metric-value">$47,382</div>
+                <div class="metric-change change-positive">
+                    ↑ 23.5% from last month
+                </div>
+                <div class="metric-sparkline"></div>
+            </div>
+            
+            <div class="metric-card green">
+                <div class="metric-header">
+                    <div class="metric-label">CONVERSION RATE</div>
+                    <div class="metric-icon green">📈</div>
+                </div>
+                <div class="metric-value">4.8%</div>
+                <div class="metric-change change-positive">
+                    ↑ 0.7% from last month
+                </div>
+                <div class="metric-sparkline"></div>
+            </div>
+            
+            <div class="metric-card purple">
+                <div class="metric-header">
+                    <div class="metric-label">AVERAGE ORDER VALUE</div>
+                    <div class="metric-icon purple">🛒</div>
+                </div>
+                <div class="metric-value">$127.45</div>
+                <div class="metric-change change-positive">
+                    ↑ 15.2% from last month
+                </div>
+                <div class="metric-sparkline"></div>
+            </div>
+            
+            <div class="metric-card orange">
+                <div class="metric-header">
+                    <div class="metric-label">ACTIVE CUSTOMERS</div>
+                    <div class="metric-icon orange">👥</div>
+                </div>
+                <div class="metric-value">2,847</div>
+                <div class="metric-change change-negative">
+                    ↓ 3.2% from last month
+                </div>
+                <div class="metric-sparkline"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Charts -->
+        <div class="analytics-grid">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3 class="chart-title">Revenue Analytics</h3>
+                    <div class="chart-options">
+                        <button class="chart-option active">Daily</button>
+                        <button class="chart-option">Weekly</button>
+                        <button class="chart-option">Monthly</button>
+                    </div>
+                </div>
+                <div class="chart-placeholder">
+                    <span>Interactive Revenue Chart with Multiple Metrics</span>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3 class="chart-title">Sales by Category</h3>
+                    <button class="btn-icon">⋮</button>
+                </div>
+                <div class="chart-placeholder" style="height: 300px;">
+                    <span>Interactive Donut Chart</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Segments -->
+        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Customer Segments</h2>
+        <div class="segment-grid">
+            <div class="segment-card">
+                <div class="segment-icon vip">👑</div>
+                <h3 class="segment-name">VIP Customers</h3>
+                <p class="segment-description">Top 10% spenders with 5+ purchases in the last year</p>
+                <div class="segment-stats">
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">287</div>
+                        <div class="segment-stat-label">Customers</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">$385</div>
+                        <div class="segment-stat-label">Avg. Order</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">45%</div>
+                        <div class="segment-stat-label">Revenue Share</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">8.2x</div>
+                        <div class="segment-stat-label">Lifetime Value</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="segment-card">
+                <div class="segment-icon loyal">💎</div>
+                <h3 class="segment-name">Loyal Customers</h3>
+                <p class="segment-description">Repeat buyers with consistent purchase patterns</p>
+                <div class="segment-stats">
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">892</div>
+                        <div class="segment-stat-label">Customers</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">$145</div>
+                        <div class="segment-stat-label">Avg. Order</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">28%</div>
+                        <div class="segment-stat-label">Revenue Share</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">3.5x</div>
+                        <div class="segment-stat-label">Lifetime Value</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="segment-card">
+                <div class="segment-icon new">🌟</div>
+                <h3 class="segment-name">New Customers</h3>
+                <p class="segment-description">First-time buyers in the last 60 days</p>
+                <div class="segment-stats">
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">456</div>
+                        <div class="segment-stat-label">Customers</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">$67</div>
+                        <div class="segment-stat-label">Avg. Order</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">12%</div>
+                        <div class="segment-stat-label">Revenue Share</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">24%</div>
+                        <div class="segment-stat-label">Return Rate</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="segment-card">
+                <div class="segment-icon risk">⚠️</div>
+                <h3 class="segment-name">At Risk</h3>
+                <p class="segment-description">Previously active customers with no recent purchases</p>
+                <div class="segment-stats">
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">234</div>
+                        <div class="segment-stat-label">Customers</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">120</div>
+                        <div class="segment-stat-label">Days Since Last</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">$2.8k</div>
+                        <div class="segment-stat-label">Potential Loss</div>
+                    </div>
+                    <div class="segment-stat">
+                        <div class="segment-stat-value">65%</div>
+                        <div class="segment-stat-label">Win-back Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Performance -->
+        <div class="table-container">
+            <div class="table-header-row">
+                <h3 class="chart-title">Top Performing Products</h3>
+                <input type="text" class="search-input" placeholder="🔍 Search products...">
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%">Product</th>
+                        <th>Revenue</th>
+                        <th>Units Sold</th>
+                        <th>Performance</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <div class="product-image">🏺</div>
+                                <div class="product-info">
+                                    <div class="product-name">Handcrafted Ceramic Vase Set</div>
+                                    <div class="product-category">Home Decor</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">$8,234</td>
+                        <td>124</td>
+                        <td>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 95%;"></div>
+                            </div>
+                        </td>
+                        <td><span class="tag bestseller">Bestseller</span></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <div class="product-image">💍</div>
+                                <div class="product-info">
+                                    <div class="product-name">Sterling Silver Moon Necklace</div>
+                                    <div class="product-category">Jewelry</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">$6,892</td>
+                        <td>89</td>
+                        <td>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 80%;"></div>
+                            </div>
+                        </td>
+                        <td><span class="tag trending">Trending</span></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <div class="product-image">🧣</div>
+                                <div class="product-info">
+                                    <div class="product-name">Organic Cotton Scarf Collection</div>
+                                    <div class="product-category">Fashion</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">$5,421</td>
+                        <td>156</td>
+                        <td>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 70%;"></div>
+                            </div>
+                        </td>
+                        <td><span class="tag trending">Trending</span></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <div class="product-image">🕯️</div>
+                                <div class="product-info">
+                                    <div class="product-name">Soy Wax Aromatherapy Candles</div>
+                                    <div class="product-category">Wellness</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">$4,127</td>
+                        <td>203</td>
+                        <td>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 60%;"></div>
+                            </div>
+                        </td>
+                        <td><span class="tag bestseller">Bestseller</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-action">
+        <button class="fab">+</button>
+    </div>
+</body>
+</html>

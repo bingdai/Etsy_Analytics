@@ -1,228 +1,272 @@
 import './styles/main.css';
 
-interface OrderData {
-  id: string;
-  customer: string;
-  product: string;
-  amount: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
-  date: string;
+interface MetricData {
+  label: string;
+  value: string | number;
+  change: number;
+  trend: 'up' | 'down' | 'stable';
+  icon: string;
+  color: 'blue' | 'green' | 'purple' | 'orange';
 }
 
-const mockOrders: OrderData[] = [
-  { id: '#3428', customer: 'Sarah Johnson', product: 'Handknit Wool Socks', amount: '$32.00', status: 'shipped', date: '2025-01-06' },
-  { id: '#3427', customer: 'Michael Chen', product: 'Cotton Ankle Socks (3 Pack)', amount: '$24.00', status: 'processing', date: '2025-01-06' },
-  { id: '#3426', customer: 'Emma Davis', product: 'Bamboo Crew Socks', amount: '$28.00', status: 'pending', date: '2025-01-05' },
-  { id: '#3425', customer: 'James Wilson', product: 'Merino Wool Hiking Socks', amount: '$36.00', status: 'delivered', date: '2025-01-05' },
-  { id: '#3424', customer: 'Lisa Anderson', product: 'Compression Running Socks', amount: '$42.00', status: 'shipped', date: '2025-01-04' },
+interface SegmentData {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  iconClass: string;
+  stats: {
+    customers: number;
+    avgOrder: number;
+    revenueShare: number;
+    ltv: string;
+  };
+}
+
+interface ProductData {
+  id: string;
+  name: string;
+  category: string;
+  revenue: number;
+  unitsSold: number;
+  performance: number;
+  status: 'bestseller' | 'trending' | 'regular';
+  icon: string;
+}
+
+const metrics: MetricData[] = [
+  { label: 'TOTAL REVENUE', value: '$47,382', change: 23.5, trend: 'up', icon: '💰', color: 'blue' },
+  { label: 'CONVERSION RATE', value: '4.8%', change: 0.7, trend: 'up', icon: '📈', color: 'green' },
+  { label: 'AVERAGE ORDER VALUE', value: '$127.45', change: 15.2, trend: 'up', icon: '🛒', color: 'purple' },
+  { label: 'ACTIVE CUSTOMERS', value: '2,847', change: -3.2, trend: 'down', icon: '👥', color: 'orange' }
 ];
 
-async function init() {
-  const app = document.getElementById('app');
-  if (!app) {
-    console.error('App container not found');
-    return;
+const segments: SegmentData[] = [
+  {
+    id: 'vip',
+    name: 'VIP Customers',
+    description: 'Top 10% spenders with 5+ purchases in the last year',
+    icon: '👑',
+    iconClass: 'vip',
+    stats: { customers: 287, avgOrder: 385, revenueShare: 45, ltv: '8.2x' }
+  },
+  {
+    id: 'loyal',
+    name: 'Loyal Customers',
+    description: 'Repeat buyers with consistent purchase patterns',
+    icon: '💎',
+    iconClass: 'loyal',
+    stats: { customers: 892, avgOrder: 145, revenueShare: 28, ltv: '3.5x' }
+  },
+  {
+    id: 'new',
+    name: 'New Customers',
+    description: 'First-time buyers in the last 60 days',
+    icon: '🌟',
+    iconClass: 'new',
+    stats: { customers: 456, avgOrder: 67, revenueShare: 12, ltv: '24%' }
+  },
+  {
+    id: 'risk',
+    name: 'At Risk',
+    description: 'Previously active customers with no recent purchases',
+    icon: '⚠️',
+    iconClass: 'risk',
+    stats: { customers: 234, avgOrder: 120, revenueShare: 2.8, ltv: '65%' }
   }
+];
 
-  app.innerHTML = `
-    <div class="dashboard">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="logo">
-          <img src="/Screenshot 2025-06-15 at 15.22.24 1.png" alt="WearsSmart Logo" class="logo-img">
-          <h2>WearsSmart Store Analytics</h2>
-          <span class="subtitle">Etsy Shop Manager</span>
-        </div>
-        
-        <nav class="nav">
-          <a href="#" class="nav-item active">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-            Dashboard
-          </a>
-          <a href="#" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-            Orders
-          </a>
-          <a href="#" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-            </svg>
-            Products
-          </a>
-          <a href="#" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"></path>
-            </svg>
-            Customers
-          </a>
-          <a href="#" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Analytics
-          </a>
-          <a href="#" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"></path>
-            </svg>
-            Messages
-            <span class="badge">3</span>
-          </a>
-        </nav>
-        
-        <div class="nav-footer">
-          <a href="#" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"></path>
-            </svg>
-            Settings
-          </a>
-        </div>
-      </aside>
+const products: ProductData[] = [
+  { id: '1', name: 'Handcrafted Ceramic Vase Set', category: 'Home Decor', revenue: 8234, unitsSold: 124, performance: 95, status: 'bestseller', icon: '🏺' },
+  { id: '2', name: 'Sterling Silver Moon Necklace', category: 'Jewelry', revenue: 6892, unitsSold: 89, performance: 80, status: 'trending', icon: '💍' },
+  { id: '3', name: 'Organic Cotton Scarf Collection', category: 'Fashion', revenue: 5421, unitsSold: 156, performance: 70, status: 'trending', icon: '🧣' },
+  { id: '4', name: 'Soy Wax Aromatherapy Candles', category: 'Wellness', revenue: 4127, unitsSold: 203, performance: 60, status: 'bestseller', icon: '🕯️' }
+];
 
-      <!-- Main Content -->
-      <main class="main-content">
-        <header class="header">
-          <div>
-            <h1>Dashboard</h1>
-            <p class="date">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-          </div>
-          <div class="header-actions">
-            <button class="btn-secondary">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-              </svg>
-              Sync
-            </button>
-            <button class="btn-primary">+ New Order</button>
-          </div>
-        </header>
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
+}
 
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-title">Total Revenue</span>
-              <span class="stat-badge positive">+12.5%</span>
-            </div>
-            <div class="stat-value">$3,247</div>
-            <div class="stat-subtitle">This month</div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-title">Orders</span>
-              <span class="stat-badge positive">+8.2%</span>
-            </div>
-            <div class="stat-value">142</div>
-            <div class="stat-subtitle">This month</div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-title">Avg Order Value</span>
-              <span class="stat-badge negative">-2.4%</span>
-            </div>
-            <div class="stat-value">$22.88</div>
-            <div class="stat-subtitle">Per order</div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-header">
-              <span class="stat-title">Pending Reviews</span>
-              <span class="stat-badge neutral">0%</span>
-            </div>
-            <div class="stat-value">7</div>
-            <div class="stat-subtitle">Awaiting response</div>
-          </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div class="content-section">
-          <div class="section-header">
-            <h2>Recent Orders</h2>
-            <a href="#" class="link">View all →</a>
-          </div>
-          
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Product</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                ${mockOrders.map(order => `
-                  <tr>
-                    <td class="order-id">${order.id}</td>
-                    <td>${order.customer}</td>
-                    <td>${order.product}</td>
-                    <td class="amount">${order.amount}</td>
-                    <td><span class="status status-${order.status}">${order.status}</span></td>
-                    <td>${order.date}</td>
-                    <td class="actions">
-                      <button class="btn-icon">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <circle cx="12" cy="12" r="1"></circle>
-                          <circle cx="12" cy="5" r="1"></circle>
-                          <circle cx="12" cy="19" r="1"></circle>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-          <h3>Quick Actions</h3>
-          <div class="action-grid">
-            <button class="action-card">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M12 4v16m8-8H4"></path>
-              </svg>
-              <span>Add Product</span>
-            </button>
-            <button class="action-card">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <span>Schedule Post</span>
-            </button>
-            <button class="action-card">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-              </svg>
-              <span>Export Data</span>
-            </button>
-            <button class="action-card">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-              <span>Send Message</span>
-            </button>
-          </div>
-        </div>
-      </main>
+function renderMetricCard(metric: MetricData): string {
+  const trendClass = metric.trend === 'up' ? 'change-positive' : 'change-negative';
+  const trendIcon = metric.trend === 'up' ? '↑' : '↓';
+  
+  return `
+    <div class="metric-card ${metric.color}">
+      <div class="metric-header">
+        <div class="metric-label">${metric.label}</div>
+        <div class="metric-icon ${metric.color}">${metric.icon}</div>
+      </div>
+      <div class="metric-value">${metric.value}</div>
+      <div class="metric-change ${trendClass}">
+        ${trendIcon} ${Math.abs(metric.change)}% from last month
+      </div>
+      <div class="metric-sparkline"></div>
     </div>
   `;
 }
 
+function renderSegmentCard(segment: SegmentData): string {
+  return `
+    <div class="segment-card">
+      <div class="segment-icon ${segment.iconClass}">${segment.icon}</div>
+      <h3 class="segment-name">${segment.name}</h3>
+      <p class="segment-description">${segment.description}</p>
+      <div class="segment-stats">
+        <div class="segment-stat">
+          <div class="segment-stat-value">${segment.stats.customers}</div>
+          <div class="segment-stat-label">Customers</div>
+        </div>
+        <div class="segment-stat">
+          <div class="segment-stat-value">$${segment.stats.avgOrder}</div>
+          <div class="segment-stat-label">Avg. Order</div>
+        </div>
+        <div class="segment-stat">
+          <div class="segment-stat-value">${segment.stats.revenueShare}%</div>
+          <div class="segment-stat-label">Revenue Share</div>
+        </div>
+        <div class="segment-stat">
+          <div class="segment-stat-value">${segment.stats.ltv}</div>
+          <div class="segment-stat-label">${segment.id === 'risk' ? 'Win-back Rate' : segment.id === 'new' ? 'Return Rate' : 'Lifetime Value'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderProductRow(product: ProductData): string {
+  return `
+    <tr>
+      <td>
+        <div class="product-cell">
+          <div class="product-image">${product.icon}</div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-category">${product.category}</div>
+          </div>
+        </div>
+      </td>
+      <td style="font-weight: 600;">${formatCurrency(product.revenue)}</td>
+      <td>${product.unitsSold}</td>
+      <td>
+        <div class="performance-bar">
+          <div class="performance-fill" style="width: ${product.performance}%;"></div>
+        </div>
+      </td>
+      <td><span class="tag ${product.status}">${product.status === 'bestseller' ? 'Bestseller' : 'Trending'}</span></td>
+    </tr>
+  `;
+}
+
+function renderAnalyticsDashboard(): string {
+  return `
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+      <div class="brand">
+        <div class="brand-logo">E</div>
+        <div class="brand-name">Etsy Analytics Pro</div>
+      </div>
+      
+      <div class="nav-tabs">
+        <button class="nav-tab active">Overview</button>
+        <button class="nav-tab">Sales</button>
+        <button class="nav-tab">Customers</button>
+        <button class="nav-tab">Products</button>
+        <button class="nav-tab">Marketing</button>
+      </div>
+      
+      <div class="nav-actions">
+        <div class="date-selector">
+          📅 Last 30 Days ▼
+        </div>
+        <button class="btn-icon">🔔</button>
+        <button class="btn-icon">⚙️</button>
+        <button class="btn-icon">👤</button>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <!-- Key Metrics -->
+      <div class="metrics-grid">
+        ${metrics.map(metric => renderMetricCard(metric)).join('')}
+      </div>
+
+      <!-- Analytics Charts -->
+      <div class="analytics-grid">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3 class="chart-title">Revenue Analytics</h3>
+            <div class="chart-options">
+              <button class="chart-option active">Daily</button>
+              <button class="chart-option">Weekly</button>
+              <button class="chart-option">Monthly</button>
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <span>Interactive Revenue Chart with Multiple Metrics</span>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3 class="chart-title">Sales by Category</h3>
+            <button class="btn-icon">⋮</button>
+          </div>
+          <div class="chart-placeholder" style="height: 300px;">
+            <span>Interactive Donut Chart</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Segments -->
+      <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Customer Segments</h2>
+      <div class="segment-grid">
+        ${segments.map(segment => renderSegmentCard(segment)).join('')}
+      </div>
+
+      <!-- Product Performance -->
+      <div class="table-container">
+        <div class="table-header-row">
+          <h3 class="chart-title">Top Performing Products</h3>
+          <input type="text" class="search-input" placeholder="🔍 Search products...">
+        </div>
+        
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 40%">Product</th>
+              <th>Revenue</th>
+              <th>Units Sold</th>
+              <th>Performance</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${products.map(product => renderProductRow(product)).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-action">
+      <button class="fab">+</button>
+    </div>
+  `;
+}
+
+function init() {
+  const app = document.getElementById('app');
+  if (app) {
+    app.innerHTML = renderAnalyticsDashboard();
+  }
+}
+
+// Initialize the app when DOM is ready
 document.addEventListener('DOMContentLoaded', init);

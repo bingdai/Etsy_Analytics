@@ -176,8 +176,8 @@ function renderAnalyticsDashboard(): string {
     <!-- Top Navigation -->
     <nav class="top-nav">
       <div class="brand">
-        <div class="brand-logo">E</div>
-        <div class="brand-name">Etsy Analytics Pro</div>
+        <div class="brand-logo">S</div>
+        <div class="brand-name">Shop Analytics Pro</div>
       </div>
       
       <div class="nav-tabs">

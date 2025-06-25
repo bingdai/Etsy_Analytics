@@ -7,7 +7,7 @@
 - Always ask clarifying questions to understand needs
 
 ## Project Context
-This is an Etsy management app. 
+This is a shop management app. 
 
 ## Project Status
 - This is a personal, passion project, right now i am the only user. security is NOT top priority at this point

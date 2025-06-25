@@ -1,4 +1,4 @@
-# Etsy API v3 Documentation
+# Shop API v3 Documentation
 
 ## Overview
 

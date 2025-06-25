@@ -1,6 +1,6 @@
-# Etsy Management App
+# Shop Management App
 
-A personal Etsy shop management application built with TypeScript, Vite, and Supabase.
+A personal shop management application built with TypeScript, Vite, and Supabase.
 
 ## Technology Stack
 

@@ -1,12 +1,12 @@
-const ETSY_API_BASE_URL = 'https://openapi.etsy.com/v3/application';
+const SHOP_API_BASE_URL = 'https://openapi.etsy.com/v3/application';
 
-export class EtsyApiService {
+export class ShopApiService {
   private apiKey: string;
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_ETSY_API_KEY || '';
+    this.apiKey = import.meta.env.VITE_SHOP_API_KEY || '';
     if (!this.apiKey) {
-      console.warn('Etsy API key not found in environment variables');
+      console.warn('Shop API key not found in environment variables');
     }
   }
 
@@ -15,7 +15,7 @@ export class EtsyApiService {
    */
   async ping(): Promise<any> {
     try {
-      const response = await fetch(`${ETSY_API_BASE_URL}/openapi-ping`, {
+      const response = await fetch(`${SHOP_API_BASE_URL}/openapi-ping`, {
         method: 'GET',
         headers: {
           'x-api-key': this.apiKey,
@@ -29,7 +29,7 @@ export class EtsyApiService {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Etsy API ping failed:', error);
+      console.error('Shop API ping failed:', error);
       throw error;
     }
   }
@@ -39,7 +39,7 @@ export class EtsyApiService {
    */
   async getShopById(shopId: string): Promise<any> {
     try {
-      const response = await fetch(`${ETSY_API_BASE_URL}/shops/${shopId}`, {
+      const response = await fetch(`${SHOP_API_BASE_URL}/shops/${shopId}`, {
         method: 'GET',
         headers: {
           'x-api-key': this.apiKey,
@@ -68,7 +68,7 @@ export class EtsyApiService {
         limit: '10',
       });
 
-      const response = await fetch(`${ETSY_API_BASE_URL}/shops?${params}`, {
+      const response = await fetch(`${SHOP_API_BASE_URL}/shops?${params}`, {
         method: 'GET',
         headers: {
           'x-api-key': this.apiKey,
@@ -89,4 +89,4 @@ export class EtsyApiService {
 }
 
 // Export a singleton instance
-export const etsyApi = new EtsyApiService();
+export const shopApi = new ShopApiService();

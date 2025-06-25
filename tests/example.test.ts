@@ -6,8 +6,8 @@ describe('Example Test Suite', () => {
   });
 
   it('should handle string operations', () => {
-    const text = 'Etsy Management';
-    expect(text).toContain('Etsy');
-    expect(text.toLowerCase()).toBe('etsy management');
+    const text = 'Shop Management';
+    expect(text).toContain('Shop');
+    expect(text.toLowerCase()).toBe('shop management');
   });
 });

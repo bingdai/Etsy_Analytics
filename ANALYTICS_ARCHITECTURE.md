@@ -123,7 +123,7 @@ interface KPI {
 - Create component architecture
 - Implement KPI cards
 - Basic revenue chart
-- Connect to Etsy API
+- Connect to Shop API
 
 ### Phase 2: Segmentation (Week 2)
 - Customer segment service
